@@ -20,7 +20,6 @@ return new class extends Migration
         });
 
         Schema::table('order_items', function (Blueprint $table) {
-            $table->index('schedule_id');
             $table->index('seat_id');
         });
 
@@ -43,7 +42,6 @@ return new class extends Migration
         });
 
         Schema::table('order_items', function (Blueprint $table) {
-            $table->dropIndex(['schedule_id']);
             $table->dropIndex(['seat_id']);
         });
 
