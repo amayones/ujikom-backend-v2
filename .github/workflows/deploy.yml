@@ -21,5 +21,11 @@ jobs:
           docker stop backend || true
           docker rm backend || true
           docker build -t cinema-backend .
-          docker run -d -p 80:80 --name backend --env-file .env cinema-backend
+          docker run -d \
+            -p 80:80 \
+            -p 443:443 \
+            -v /etc/letsencrypt:/etc/letsencrypt:ro \
+            --name backend \
+            --env-file .env \
+            cinema-backend
           docker exec backend php artisan migrate --force
