@@ -16,7 +16,7 @@ class FilmSeeder extends Seeder
                 'duration' => 181,
                 'status' => 'play_now',
                 'description' => 'The epic conclusion to the Infinity Saga.',
-                'poster' => 'https://via.placeholder.com/300x450/1a1a2e/eaeaea?text=Avengers+Endgame',
+                'poster' => 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
                 'base_price' => 50000
             ],
             [
@@ -25,7 +25,7 @@ class FilmSeeder extends Seeder
                 'duration' => 148,
                 'status' => 'play_now',
                 'description' => 'Peter Parker seeks help from Doctor Strange.',
-                'poster' => 'https://via.placeholder.com/300x450/c1121f/ffffff?text=Spider-Man+NWH',
+                'poster' => 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
                 'base_price' => 45000
             ],
             [
@@ -34,7 +34,7 @@ class FilmSeeder extends Seeder
                 'duration' => 176,
                 'status' => 'coming_soon',
                 'description' => 'A new take on the Dark Knight.',
-                'poster' => 'https://via.placeholder.com/300x450/000000/dc143c?text=The+Batman',
+                'poster' => 'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg',
                 'base_price' => 55000
             ],
             [
@@ -43,7 +43,7 @@ class FilmSeeder extends Seeder
                 'duration' => 130,
                 'status' => 'play_now',
                 'description' => 'Maverick returns to train a new generation.',
-                'poster' => 'https://via.placeholder.com/300x450/003566/ffd60a?text=Top+Gun+Maverick',
+                'poster' => 'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg',
                 'base_price' => 48000
             ],
             [
@@ -52,7 +52,7 @@ class FilmSeeder extends Seeder
                 'duration' => 166,
                 'status' => 'play_now',
                 'description' => 'Paul Atreides unites with Chani and the Fremen.',
-                'poster' => 'https://via.placeholder.com/300x450/d4a373/000000?text=Dune+Part+Two',
+                'poster' => 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',
                 'base_price' => 52000
             ],
             [
@@ -61,7 +61,7 @@ class FilmSeeder extends Seeder
                 'duration' => 180,
                 'status' => 'coming_soon',
                 'description' => 'The story of J. Robert Oppenheimer.',
-                'poster' => 'https://via.placeholder.com/300x450/ff6700/ffffff?text=Oppenheimer',
+                'poster' => 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
                 'base_price' => 50000
             ]
         ];
