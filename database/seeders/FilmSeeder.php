@@ -11,40 +11,22 @@ class FilmSeeder extends Seeder
     {
         $films = [
             [
-                'title' => 'Avengers: Endgame',
-                'genre' => 'Action, Adventure',
-                'duration' => 181,
+                'title' => 'Deadpool & Wolverine',
+                'genre' => 'Action, Comedy',
+                'duration' => 128,
                 'status' => 'play_now',
-                'description' => 'The epic conclusion to the Infinity Saga.',
-                'poster' => 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
-                'base_price' => 50000
-            ],
-            [
-                'title' => 'Spider-Man: No Way Home',
-                'genre' => 'Action, Adventure',
-                'duration' => 148,
-                'status' => 'play_now',
-                'description' => 'Peter Parker seeks help from Doctor Strange.',
-                'poster' => 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
-                'base_price' => 45000
-            ],
-            [
-                'title' => 'The Batman',
-                'genre' => 'Action, Crime',
-                'duration' => 176,
-                'status' => 'coming_soon',
-                'description' => 'A new take on the Dark Knight.',
-                'poster' => 'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg',
+                'description' => 'Deadpool teams up with Wolverine in an epic adventure.',
+                'poster' => 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg',
                 'base_price' => 55000
             ],
             [
-                'title' => 'Top Gun: Maverick',
-                'genre' => 'Action, Drama',
-                'duration' => 130,
+                'title' => 'Inside Out 2',
+                'genre' => 'Animation, Family',
+                'duration' => 96,
                 'status' => 'play_now',
-                'description' => 'Maverick returns to train a new generation.',
-                'poster' => 'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg',
-                'base_price' => 48000
+                'description' => 'Riley enters puberty and new emotions appear.',
+                'poster' => 'https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg',
+                'base_price' => 45000
             ],
             [
                 'title' => 'Dune: Part Two',
@@ -56,13 +38,31 @@ class FilmSeeder extends Seeder
                 'base_price' => 52000
             ],
             [
-                'title' => 'Oppenheimer',
-                'genre' => 'Biography, Drama',
-                'duration' => 180,
+                'title' => 'Wicked',
+                'genre' => 'Fantasy, Musical',
+                'duration' => 160,
                 'status' => 'coming_soon',
-                'description' => 'The story of J. Robert Oppenheimer.',
-                'poster' => 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
+                'description' => 'The untold story of the Witches of Oz.',
+                'poster' => 'https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg',
                 'base_price' => 50000
+            ],
+            [
+                'title' => 'Moana 2',
+                'genre' => 'Animation, Adventure',
+                'duration' => 100,
+                'status' => 'coming_soon',
+                'description' => 'Moana embarks on a new oceanic adventure.',
+                'poster' => 'https://image.tmdb.org/t/p/w500/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg',
+                'base_price' => 48000
+            ],
+            [
+                'title' => 'Gladiator II',
+                'genre' => 'Action, Drama',
+                'duration' => 148,
+                'status' => 'coming_soon',
+                'description' => 'The epic saga continues with a new gladiator.',
+                'poster' => 'https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg',
+                'base_price' => 55000
             ]
         ];
 
