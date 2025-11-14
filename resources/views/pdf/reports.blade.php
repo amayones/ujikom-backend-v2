@@ -57,15 +57,9 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-inner card-expense">
-                <div class="card-title">Total Pengeluaran</div>
-                <div class="card-value">Rp {{ number_format($summary['total_expenses'], 0, ',', '.') }}</div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-inner card-profit">
-                <div class="card-title">Keuntungan Bersih</div>
-                <div class="card-value">Rp {{ number_format($summary['net_profit'], 0, ',', '.') }}</div>
+                <div class="card-title">Total Transaksi</div>
+                <div class="card-value">{{ $summary['total_transactions'] }}</div>
             </div>
         </div>
     </div>
