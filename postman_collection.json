@@ -1,22 +1,24 @@
 {
   "info": {
-    "name": "Backend AC - Absolute Cinema API",
-    "description": "API Collection untuk testing Backend Absolute Cinema",
+    "name": "Absolute Cinema API",
+    "description": "Complete API collection for Absolute Cinema backend",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8000/api"
+      "value": "https://be-ac.amayones.my.id/api",
+      "type": "string"
     },
     {
       "key": "token",
-      "value": ""
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Auth",
+      "name": "1. Authentication",
       "item": [
         {
           "name": "Register",
@@ -30,7 +32,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"081234567890\",\n  \"role\": \"customer\"\n}"
+              "raw": "{\n  \"name\": \"New Customer\",\n  \"email\": \"newcustomer@test.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"phone\": \"081234567890\",\n  \"role\": \"customer\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/register",
@@ -41,6 +43,19 @@
         },
         {
           "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -51,7 +66,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"customer@test.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"customer@test.com\",\n  \"password\": \"password\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/login",
@@ -59,14 +74,73 @@
               "path": ["login"]
             }
           }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            }
+          }
         }
       ]
     },
     {
-      "name": "Public",
+      "name": "2. Public",
       "item": [
         {
-          "name": "Get Films",
+          "name": "Get All Films",
           "request": {
             "method": "GET",
             "url": {
@@ -108,11 +182,22 @@
               "path": ["seats", "1"]
             }
           }
+        },
+        {
+          "name": "Get All Studios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/studios",
+              "host": ["{{base_url}}"],
+              "path": ["studios"]
+            }
+          }
         }
       ]
     },
     {
-      "name": "Customer",
+      "name": "3. Customer",
       "item": [
         {
           "name": "Checkout",
@@ -140,7 +225,7 @@
           }
         },
         {
-          "name": "Get Orders",
+          "name": "Get My Orders",
           "request": {
             "method": "GET",
             "header": [
@@ -153,6 +238,789 @@
               "raw": "{{base_url}}/orders",
               "host": ["{{base_url}}"],
               "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/1",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "1"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/1/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "1", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - Films",
+      "item": [
+        {
+          "name": "Get All Films",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/films",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "films"]
+            }
+          }
+        },
+        {
+          "name": "Create Film",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Movie\",\n  \"genre\": \"Action\",\n  \"duration\": 120,\n  \"status\": \"play_now\",\n  \"description\": \"Test movie description\",\n  \"poster\": \"https://image.tmdb.org/t/p/w500/test.jpg\",\n  \"base_price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/films",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "films"]
+            }
+          }
+        },
+        {
+          "name": "Get Film Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/films/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "films", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Film",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Movie\",\n  \"genre\": \"Drama\",\n  \"duration\": 130,\n  \"status\": \"coming_soon\",\n  \"description\": \"Updated description\",\n  \"poster\": \"https://image.tmdb.org/t/p/w500/updated.jpg\",\n  \"base_price\": 60000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/films/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "films", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Film",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/films/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "films", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Admin - Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@test.com\",\n  \"password\": \"password\",\n  \"role\": \"customer\",\n  \"phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User\",\n  \"email\": \"updated@test.com\",\n  \"role\": \"cashier\",\n  \"phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Admin - Schedules",
+      "item": [
+        {
+          "name": "Get All Schedules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/schedules",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "schedules"]
+            }
+          }
+        },
+        {
+          "name": "Create Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"film_id\": 1,\n  \"studio_id\": 1,\n  \"show_time\": \"2024-12-25 19:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/schedules",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "schedules"]
+            }
+          }
+        },
+        {
+          "name": "Get Schedule Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/schedules/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "schedules", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"film_id\": 1,\n  \"studio_id\": 2,\n  \"show_time\": \"2024-12-26 20:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/schedules/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "schedules", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Schedule",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/schedules/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "schedules", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Admin - Prices",
+      "item": [
+        {
+          "name": "Get All Prices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/prices",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "prices"]
+            }
+          }
+        },
+        {
+          "name": "Create Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day_type\": \"weekday\",\n  \"seat_category\": \"regular\",\n  \"price\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/prices",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "prices"]
+            }
+          }
+        },
+        {
+          "name": "Get Price Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/prices/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "prices", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Price",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day_type\": \"weekend\",\n  \"seat_category\": \"vip\",\n  \"price\": 100000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/prices/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "prices", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Price",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/prices/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "prices", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Admin - Seats",
+      "item": [
+        {
+          "name": "Get All Seats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/seats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "seats"]
+            }
+          }
+        },
+        {
+          "name": "Create Seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studio_id\": 1,\n  \"row\": \"A\",\n  \"column\": 1,\n  \"category\": \"regular\",\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/seats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "seats"]
+            }
+          }
+        },
+        {
+          "name": "Get Seat Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/seats/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "seats", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Seat",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studio_id\": 1,\n  \"row\": \"B\",\n  \"column\": 2,\n  \"category\": \"vip\",\n  \"status\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/seats/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "seats", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Seat",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/seats/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "seats", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Owner - Reports",
+      "item": [
+        {
+          "name": "Get Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/owner/reports?start_date=2024-01-01&end_date=2024-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["owner", "reports"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export PDF Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/owner/reports/export-pdf?start_date=2024-01-01&end_date=2024-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["owner", "reports", "export-pdf"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Cashier",
+      "item": [
+        {
+          "name": "Create Offline Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schedule_id\": 1,\n  \"seat_ids\": [1, 2],\n  \"customer_name\": \"Walk-in Customer\",\n  \"customer_phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cashier/offline-order",
+              "host": ["{{base_url}}"],
+              "path": ["cashier", "offline-order"]
+            }
+          }
+        },
+        {
+          "name": "Create Online Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schedule_id\": 1,\n  \"seat_ids\": [3, 4],\n  \"customer_name\": \"Online Customer\",\n  \"customer_phone\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cashier/online-order",
+              "host": ["{{base_url}}"],
+              "path": ["cashier", "online-order"]
+            }
+          }
+        },
+        {
+          "name": "Process Online Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cashier/process-online/1",
+              "host": ["{{base_url}}"],
+              "path": ["cashier", "process-online", "1"]
+            }
+          }
+        },
+        {
+          "name": "Print Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cashier/print-ticket/1",
+              "host": ["{{base_url}}"],
+              "path": ["cashier", "print-ticket", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Payment",
+      "item": [
+        {
+          "name": "Get Midtrans Client Key",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/payment/client-key",
+              "host": ["{{base_url}}"],
+              "path": ["payment", "client-key"]
+            }
+          }
+        },
+        {
+          "name": "Get Snap Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payment/snap-token/1",
+              "host": ["{{base_url}}"],
+              "path": ["payment", "snap-token", "1"]
+            }
+          }
+        },
+        {
+          "name": "Check Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payment/status/ORD-20241225-001",
+              "host": ["{{base_url}}"],
+              "path": ["payment", "status", "ORD-20241225-001"]
+            }
+          }
+        },
+        {
+          "name": "Midtrans Callback (Webhook)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_status\": \"settlement\",\n  \"order_id\": \"ORD-20241225-001\",\n  \"gross_amount\": \"100000\",\n  \"payment_type\": \"credit_card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payment/callback",
+              "host": ["{{base_url}}"],
+              "path": ["payment", "callback"]
             }
           }
         }

@@ -18,6 +18,9 @@ class Order extends Model
         'order_type',
         'customer_name',
         'customer_phone',
+        'ticket_status',
+        'scanned_at',
+        'scanned_by',
     ];
 
     public function user()
@@ -33,5 +36,10 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function scannedBy()
+    {
+        return $this->belongsTo(User::class, 'scanned_by');
     }
 }

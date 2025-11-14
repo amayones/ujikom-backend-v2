@@ -229,4 +229,57 @@ class OrderController extends Controller
             return $this->errorResponse('Failed to create order: ' . $e->getMessage(), 500);
         }
     }
+
+    public function scanTicket(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_number' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation failed', 422, $validator->errors());
+        }
+
+        try {
+            $order = Order::with(['orderItems.seat', 'schedule.film', 'schedule.studio', 'user'])
+                         ->where('order_number', $request->order_number)
+                         ->first();
+
+            if (!$order) {
+                return $this->errorResponse('Tiket tidak ditemukan', 404);
+            }
+
+            if ($order->payment_status !== 'paid') {
+                return $this->errorResponse('Tiket belum dibayar', 400);
+            }
+
+            if ($order->ticket_status === 'scanned') {
+                return $this->errorResponse(
+                    'Tiket sudah digunakan pada ' . Carbon::parse($order->scanned_at)->format('d/m/Y H:i'),
+                    400
+                );
+            }
+
+            // Check if show time has passed
+            $showTime = Carbon::parse($order->schedule->show_time);
+            if (Carbon::now()->lt($showTime->subMinutes(30))) {
+                return $this->errorResponse('Tiket hanya bisa di-scan 30 menit sebelum jadwal tayang', 400);
+            }
+
+            // Update ticket status
+            $order->update([
+                'ticket_status' => 'scanned',
+                'scanned_at' => now(),
+                'scanned_by' => $request->user()->id
+            ]);
+
+            $order->load('scannedBy');
+
+            return $this->successResponse($order, 'Tiket berhasil di-scan. Pelanggan dapat masuk.');
+
+        } catch (\Exception $e) {
+            \Log::error('Scan ticket error: ' . $e->getMessage());
+            return $this->errorResponse('Gagal scan tiket: ' . $e->getMessage(), 500);
+        }
+    }
 }

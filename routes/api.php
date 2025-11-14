@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
     Route::post('/online-order', [CashierOrderController::class, 'onlineOrder']);
     Route::get('/process-online/{order_id}', [CashierOrderController::class, 'processOnline']);
     Route::post('/print-ticket/{order_id}', [CashierOrderController::class, 'printTicket']);
+    Route::post('/scan-ticket', [CashierOrderController::class, 'scanTicket']);
 });
 
 // Payment Routes
