@@ -14,6 +14,7 @@ class Seat extends Model
         'row',
         'column',
         'category',
+        'status',
     ];
 
     public function studio()
