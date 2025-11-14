@@ -156,7 +156,9 @@ class OrderController extends Controller
         $validator = Validator::make($request->all(), [
             'schedule_id' => 'required|exists:schedules,id',
             'seat_ids' => 'required|array',
-            'seat_ids.*' => 'exists:seats,id'
+            'seat_ids.*' => 'exists:seats,id',
+            'customer_name' => 'nullable|string|max:255',
+            'customer_phone' => 'nullable|string|max:15'
         ]);
 
         if ($validator->fails()) {
@@ -206,7 +208,9 @@ class OrderController extends Controller
                 'schedule_id' => $request->schedule_id,
                 'total_amount' => $totalAmount,
                 'payment_status' => 'pending',
-                'order_type' => 'cashier_online'
+                'order_type' => 'cashier_online',
+                'customer_name' => $request->customer_name,
+                'customer_phone' => $request->customer_phone
             ]);
 
             foreach ($orderItems as $item) {
