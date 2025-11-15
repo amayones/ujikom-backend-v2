@@ -22,7 +22,6 @@ class PriceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'day_type' => 'required|in:weekday,weekend',
-            'seat_category' => 'required|in:regular,vip',
             'price' => 'required|numeric|min:0'
         ]);
 
@@ -55,7 +54,6 @@ class PriceController extends Controller
 
         $validator = Validator::make($request->all(), [
             'day_type' => 'required|in:weekday,weekend',
-            'seat_category' => 'required|in:regular,vip',
             'price' => 'required|numeric|min:0'
         ]);
 

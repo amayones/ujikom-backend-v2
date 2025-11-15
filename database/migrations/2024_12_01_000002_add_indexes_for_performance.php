@@ -46,12 +46,12 @@ return new class extends Migration
     
     private function addIndexIfNotExists(string $table, string $indexName, array $columns): void
     {
-        $indexes = DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
-        
-        if (empty($indexes)) {
+        try {
             Schema::table($table, function (Blueprint $blueprint) use ($columns, $indexName) {
                 $blueprint->index($columns, $indexName);
             });
+        } catch (\Exception $e) {
+            // Index already exists, skip
         }
     }
 };

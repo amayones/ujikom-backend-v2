@@ -13,7 +13,6 @@ class Seat extends Model
         'studio_id',
         'row',
         'column',
-        'category',
         'status',
     ];
 

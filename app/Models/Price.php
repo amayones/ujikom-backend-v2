@@ -11,7 +11,6 @@ class Price extends Model
 
     protected $fillable = [
         'day_type',
-        'seat_category',
         'price',
     ];
 }

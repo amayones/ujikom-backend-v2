@@ -18,14 +18,10 @@ class SeatSeeder extends Seeder
 
             foreach ($rows as $rowIndex => $row) {
                 for ($col = 1; $col <= $columns; $col++) {
-                    // Row D & E = VIP, A-C = Regular
-                    $category = in_array($row, ['D', 'E']) ? 'vip' : 'regular';
-                    
                     Seat::create([
                         'studio_id' => $studio->id,
                         'row' => $row,
-                        'column' => $col,
-                        'category' => $category
+                        'column' => $col
                     ]);
                 }
             }

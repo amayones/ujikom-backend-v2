@@ -24,7 +24,6 @@ class SeatController extends Controller
             'studio_id' => 'required|exists:studios,id',
             'row' => 'required|string|max:5',
             'column' => 'required|integer|min:1',
-            'category' => 'required|in:regular,vip',
             'status' => 'required|in:available,maintenance'
         ]);
 
@@ -61,7 +60,6 @@ class SeatController extends Controller
             'studio_id' => 'required|exists:studios,id',
             'row' => 'required|string|max:5',
             'column' => 'required|integer|min:1',
-            'category' => 'required|in:regular,vip',
             'status' => 'required|in:available,maintenance'
         ]);
 

@@ -58,18 +58,13 @@ class OrderController extends Controller
             $showDate = Carbon::parse($schedule->show_time);
             $dayType = $showDate->isWeekend() ? 'weekend' : 'weekday';
             
-            // Fetch all prices at once to avoid N+1 query
-            $prices = Price::where('day_type', $dayType)
-                          ->whereIn('seat_category', $seats->pluck('category')->unique())
-                          ->get()
-                          ->keyBy('seat_category');
+            $price = Price::where('day_type', $dayType)->first();
+            $seatPrice = $price ? $price->price : $schedule->film->base_price;
             
             $totalAmount = 0;
             $orderItems = [];
 
             foreach ($seats as $seat) {
-                $price = $prices->get($seat->category);
-                $seatPrice = $price ? $price->price : $schedule->film->base_price;
                 $totalAmount += $seatPrice;
                 
                 $orderItems[] = [
