@@ -94,17 +94,32 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/orders', function() {
+    Route::get('/orders', function(\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        $query = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat']);
+        
+        // Customer hanya lihat order sendiri
+        if ($user->role === 'customer') {
+            $query->where('user_id', $user->id);
+        }
+        // Admin, owner, cashier lihat semua
+        
         return response()->json([
             'success' => true,
-            'data' => \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
-                ->orderBy('created_at', 'desc')
-                ->get()
+            'data' => $query->orderBy('created_at', 'desc')->get()
         ]);
     });
     
-    Route::get('/orders/{id}', function($id) {
-        $order = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->find($id);
+    Route::get('/orders/{id}', function(\Illuminate\Http\Request $request, $id) {
+        $user = $request->user();
+        $query = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat']);
+        
+        // Customer hanya bisa lihat order sendiri
+        if ($user->role === 'customer') {
+            $query->where('user_id', $user->id);
+        }
+        
+        $order = $query->find($id);
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Order not found'], 404);
         }
