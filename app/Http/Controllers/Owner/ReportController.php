@@ -164,7 +164,7 @@ class ReportController extends Controller
         $transactions = $orders->map(function($order) {
             return [
                 'order_number' => $order->order_number,
-                'customer_name' => $order->user->name,
+                'customer_name' => $order->user->name ?? $order->customer_name ?? 'N/A',
                 'film_title' => $order->schedule->film->title ?? 'N/A',
                 'total_amount' => $order->total_amount,
                 'seats' => $order->orderItems->map(fn($item) => $item->seat->row . $item->seat->column)->join(', '),
