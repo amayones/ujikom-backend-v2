@@ -38,11 +38,16 @@ Route::get('/studios', function() {
         'data' => \App\Models\Studio::all()
     ]);
 });
+Route::get('/prices', function() {
+    return response()->json([
+        'success' => true,
+        'message' => 'Prices retrieved successfully',
+        'data' => \App\Models\Price::all()
+    ]);
+});
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
     Route::post('/checkout', [CustomerOrderController::class, 'checkout']);
-    Route::get('/orders', [CustomerOrderController::class, 'index']);
-    Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
     Route::post('/orders/{id}/cancel', [CustomerOrderController::class, 'cancel']);
 });
 
@@ -70,6 +75,22 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
     Route::get('/process-online/{order_id}', [CashierOrderController::class, 'processOnline']);
     Route::post('/print-ticket/{order_id}', [CashierOrderController::class, 'printTicket']);
     Route::post('/scan-ticket', [CashierOrderController::class, 'scanTicket']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/orders', function() {
+        return response()->json([
+            'success' => true,
+            'data' => \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->get()
+        ]);
+    });
+    Route::get('/orders/{id}', function($id) {
+        $order = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->find($id);
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+        return response()->json(['success' => true, 'data' => $order]);
+    });
 });
 
 // Payment Routes
