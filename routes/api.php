@@ -117,6 +117,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/status/{orderNumber}', [PaymentController::class, 'checkStatus']);
 });
 
+// Debug endpoint to check orders
+Route::get('/debug-orders', function() {
+    try {
+        $orders = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat', 'user'])->get();
+        return response()->json([
+            'success' => true,
+            'total' => $orders->count(),
+            'orders' => $orders->map(function($order) {
+                return [
+                    'id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'order_type' => $order->order_type,
+                    'payment_status' => $order->payment_status,
+                    'total_amount' => $order->total_amount,
+                    'user_email' => $order->user->email ?? 'N/A',
+                    'film' => $order->schedule->film->title ?? 'N/A',
+                    'seats_count' => $order->orderItems->count(),
+                    'created_at' => $order->created_at,
+                ];
+            })
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
 // Cleanup old pending orders
 Route::get('/cleanup-pending-orders', function() {
     try {
