@@ -32,12 +32,12 @@ class ScanController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Order number is required', 422, $validator->errors());
+            return $this->errorResponse('Masukkan nomor order', 422);
         }
 
         try {
-            $order = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
-                ->where('order_number', $request->order_number)
+            $order = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat', 'user'])
+                ->where('order_number', strtoupper($request->order_number))
                 ->first();
 
             if (!$order) {
@@ -56,14 +56,13 @@ class ScanController extends Controller
             }
 
             // Update ticket status
-            $order->ticket_status = 'scanned';
-            $order->scanned_at = now();
-            $order->scanned_by = $request->user()->id;
-            $order->save();
+            $order->update([
+                'ticket_status' => 'scanned',
+                'scanned_at' => now(),
+                'scanned_by' => $request->user()->id
+            ]);
 
-            $order->load(['schedule.film', 'schedule.studio', 'orderItems.seat']);
-
-            return $this->successResponse($order, 'Tiket berhasil di-scan. Pelanggan dapat masuk.');
+            return $this->successResponse($order, 'Tiket berhasil di-scan');
         } catch (\Exception $e) {
             return $this->errorResponse('Gagal scan tiket: ' . $e->getMessage(), 500);
         }
