@@ -70,7 +70,7 @@ Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(functi
 });
 
 // Cashier Routes
-Route::prefix('cashier')->middleware(['auth:sanctum', 'role:cashier'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(function () {
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
     Route::post('scan-ticket', [CashierOrderController::class, 'scanTicket']);
 });
