@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\PriceController as AdminPriceController;
 use App\Http\Controllers\Admin\SeatController as AdminSeatController;
 use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Cashier\OrderController as CashierOrderController;
+use App\Http\Controllers\Cashier\ScanController;
 use App\Http\Controllers\PaymentController;
 
 // Auth Routes
@@ -69,41 +70,11 @@ Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(functi
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf']);
 });
 
-// Cashier Routes - All cashier endpoints
+// Cashier Routes
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(function () {
-    // Create offline order
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
-    
-    // Scan ticket (legacy endpoint)
-    Route::post('scan-ticket', [CashierOrderController::class, 'scanTicket']);
-    
-    // Get all orders for cashier
-    Route::get('orders', function() {
-        return response()->json([
-            'success' => true,
-            'data' => \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
-                ->orderBy('created_at', 'desc')
-                ->get()
-        ]);
-    });
-    
-    // Scan ticket - update order status
-    Route::put('update-ticket/{id}', function(\Illuminate\Http\Request $request, $id) {
-        $order = \App\Models\Order::find($id);
-        if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
-        }
-        
-        if ($request->has('ticket_status')) {
-            $order->ticket_status = $request->ticket_status;
-            $order->scanned_at = $request->scanned_at ?? now();
-            $order->scanned_by = $request->user()->id;
-            $order->save();
-        }
-        
-        $order->load(['schedule.film', 'schedule.studio', 'orderItems.seat']);
-        return response()->json(['success' => true, 'data' => $order, 'message' => 'Ticket scanned successfully']);
-    });
+    Route::get('orders', [ScanController::class, 'getAllOrders']);
+    Route::post('scan', [ScanController::class, 'scanAndUpdate']);
 });
 
 Route::middleware(['auth:sanctum', 'role:customer,admin,owner'])->group(function () {
@@ -140,18 +111,7 @@ Route::middleware(['auth:sanctum', 'role:customer,admin,owner'])->group(function
     });
 });
 
-// Cashier get order by id
-Route::middleware(['auth:sanctum', 'role:cashier'])->group(function () {
-    Route::get('/orders/{id}', function($id) {
-        $order = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->find($id);
-        if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
-        }
-        return response()->json(['success' => true, 'data' => $order]);
-    });
-    
 
-});
 
 // Payment Routes
 Route::get('/payment/client-key', [PaymentController::class, 'getClientKey']);
