@@ -92,6 +92,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
         return response()->json(['success' => true, 'data' => $order]);
     });
+    
+    Route::put('/orders/{id}', function(\Illuminate\Http\Request $request, $id) {
+        $order = \App\Models\Order::find($id);
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+        
+        // Update ticket status
+        if ($request->has('ticket_status')) {
+            $order->ticket_status = $request->ticket_status;
+            $order->scanned_at = $request->scanned_at ?? now();
+            $order->scanned_by = $request->user()->id;
+            $order->save();
+        }
+        
+        return response()->json(['success' => true, 'data' => $order, 'message' => 'Order updated successfully']);
+    });
 });
 
 // Payment Routes
