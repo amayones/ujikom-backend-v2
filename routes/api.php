@@ -69,9 +69,12 @@ Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(functi
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf']);
 });
 
-// Cashier Routes
+// Cashier Routes - All cashier endpoints
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(function () {
+    // Create offline order
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
+    
+    // Scan ticket (legacy endpoint)
     Route::post('scan-ticket', [CashierOrderController::class, 'scanTicket']);
     
     // Get all orders for cashier
