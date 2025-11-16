@@ -41,7 +41,26 @@ Route::get('/studios', function() {
 Route::get('/check-films', function() {
     return response()->json([
         'success' => true,
-        'data' => \App\Models\Film::select('id', 'title', 'poster', 'trailer')->get()
+        'data' => \App\Models\Film::select('id', 'title', 'poster', 'trailer', 'created_at')->get()
+    ]);
+});
+Route::get('/delete-old-films', function() {
+    // Delete films that are not in the new seeder
+    $newFilmTitles = [
+        'Deadpool & Wolverine',
+        'Inside Out 2',
+        'Dune: Part Two',
+        'Wicked',
+        'Moana 2',
+        'Gladiator II'
+    ];
+    
+    $deleted = \App\Models\Film::whereNotIn('title', $newFilmTitles)->delete();
+    
+    return response()->json([
+        'success' => true,
+        'message' => "Deleted {$deleted} old films",
+        'remaining_films' => \App\Models\Film::select('id', 'title')->get()
     ]);
 });
 Route::get('/prices', function() {
@@ -108,6 +127,21 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Utility Routes (for production updates)
+Route::get('/force-reseed', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Database reseeded successfully',
+            'output' => \Illuminate\Support\Facades\Artisan::output()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
 Route::get('/update-films', function() {
     $updates = [
         'Deadpool & Wolverine' => [
