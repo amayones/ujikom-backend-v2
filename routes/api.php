@@ -50,6 +50,8 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
     Route::apiResource('films', AdminFilmController::class);
     Route::apiResource('users', AdminUserController::class);
+    Route::post('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus']);
+    Route::post('users/{id}/reset-password', [AdminUserController::class, 'resetPassword']);
     Route::apiResource('schedules', AdminScheduleController::class);
     Route::apiResource('prices', AdminPriceController::class);
     Route::apiResource('seats', AdminSeatController::class);

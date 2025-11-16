@@ -15,7 +15,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::all();
+        $users = User::withTrashed()->get();
         return $this->successResponse($users, 'Users retrieved successfully');
     }
 
@@ -94,5 +94,41 @@ class UserController extends Controller
 
         $user->delete();
         return $this->successResponse(null, 'User deleted successfully');
+    }
+
+    public function toggleStatus($id)
+    {
+        $user = User::withTrashed()->find($id);
+        
+        if (!$user) {
+            return $this->errorResponse('User not found', 404);
+        }
+
+        if ($user->trashed()) {
+            $user->restore();
+            $message = 'User activated successfully';
+        } else {
+            $user->delete();
+            $message = 'User deactivated successfully';
+        }
+
+        return $this->successResponse($user->fresh(), $message);
+    }
+
+    public function resetPassword($id)
+    {
+        $user = User::find($id);
+        
+        if (!$user) {
+            return $this->errorResponse('User not found', 404);
+        }
+
+        $newPassword = 'password';
+        $user->update(['password' => Hash::make($newPassword)]);
+
+        return $this->successResponse(
+            ['email' => $user->email, 'new_password' => $newPassword],
+            'Password reset successfully'
+        );
     }
 }
