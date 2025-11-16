@@ -74,6 +74,16 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
     Route::post('scan-ticket', [CashierOrderController::class, 'scanTicket']);
     
+    // Get all orders for cashier
+    Route::get('orders', function() {
+        return response()->json([
+            'success' => true,
+            'data' => \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
+                ->orderBy('created_at', 'desc')
+                ->get()
+        ]);
+    });
+    
     // Scan ticket - update order status
     Route::put('update-ticket/{id}', function(\Illuminate\Http\Request $request, $id) {
         $order = \App\Models\Order::find($id);
@@ -93,7 +103,7 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
     });
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:customer,admin,owner'])->group(function () {
     Route::get('/orders', function(\Illuminate\Http\Request $request) {
         $user = $request->user();
         $query = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat']);
@@ -102,7 +112,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         if ($user->role === 'customer') {
             $query->where('user_id', $user->id);
         }
-        // Admin, owner, cashier lihat semua
+        // Admin, owner lihat semua
         
         return response()->json([
             'success' => true,
@@ -120,6 +130,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
         
         $order = $query->find($id);
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+        return response()->json(['success' => true, 'data' => $order]);
+    });
+});
+
+// Cashier get order by id
+Route::middleware(['auth:sanctum', 'role:cashier'])->group(function () {
+    Route::get('/orders/{id}', function($id) {
+        $order = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->find($id);
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Order not found'], 404);
         }
