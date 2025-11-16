@@ -17,6 +17,7 @@ class Film extends Model
         'status',
         'description',
         'poster',
+        'trailer',
         'base_price',
     ];
 
