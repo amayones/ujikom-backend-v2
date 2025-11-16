@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('trailer')->nullable()->after('poster');
         });
     }
- 
+  
     public function down(): void
     {
         Schema::table('films', function (Blueprint $table) {
