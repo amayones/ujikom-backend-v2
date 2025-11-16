@@ -77,31 +77,16 @@ Route::prefix('cashier')->middleware(['auth:sanctum', 'role:cashier'])->group(fu
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/orders', function() {
-        $user = auth()->user();
-        $query = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat']);
-        
-        // Customer only sees their own orders
-        if ($user->role === 'customer') {
-            $query->where('user_id', $user->id);
-        }
-        // Cashier, admin, owner see all orders
-        
         return response()->json([
             'success' => true,
-            'data' => $query->orderBy('created_at', 'desc')->get()
+            'data' => \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
+                ->orderBy('created_at', 'desc')
+                ->get()
         ]);
     });
     
     Route::get('/orders/{id}', function($id) {
-        $user = auth()->user();
-        $query = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat']);
-        
-        // Customer only sees their own orders
-        if ($user->role === 'customer') {
-            $query->where('user_id', $user->id);
-        }
-        
-        $order = $query->find($id);
+        $order = \App\Models\Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])->find($id);
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Order not found'], 404);
         }
