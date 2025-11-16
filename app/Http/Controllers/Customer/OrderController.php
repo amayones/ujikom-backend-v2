@@ -37,9 +37,10 @@ class OrderController extends Controller
             $schedule = Schedule::with(['film', 'studio'])->find($request->schedule_id);
             $seats = Seat::whereIn('id', $request->seat_ids)->lockForUpdate()->get();
             
-            // Check if seats are available (including pending orders within 10 minutes)
+            // Check if seats are available (excluding cancelled orders)
             $bookedSeats = OrderItem::whereHas('order', function($query) use ($request) {
                 $query->where('schedule_id', $request->schedule_id)
+                      ->whereIn('payment_status', ['paid', 'pending'])
                       ->where(function($q) {
                           $q->where('payment_status', 'paid')
                             ->orWhere(function($q2) {
