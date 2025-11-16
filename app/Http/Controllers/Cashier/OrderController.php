@@ -39,16 +39,10 @@ class OrderController extends Controller
             $schedule = Schedule::with(['film', 'studio'])->find($request->schedule_id);
             $seats = Seat::whereIn('id', $request->seat_ids)->lockForUpdate()->get();
             
-            // Check if seats are available (including pending orders)
+            // Check if seats are available (only paid orders)
             $bookedSeats = OrderItem::whereHas('order', function($query) use ($request) {
                 $query->where('schedule_id', $request->schedule_id)
-                      ->where(function($q) {
-                          $q->where('payment_status', 'paid')
-                            ->orWhere(function($q2) {
-                                $q2->where('payment_status', 'pending')
-                                   ->where('created_at', '>', now()->subMinutes(10));
-                            });
-                      });
+                      ->where('payment_status', 'paid');
             })->whereIn('seat_id', $request->seat_ids)->exists();
 
             if ($bookedSeats) {
@@ -166,12 +160,14 @@ class OrderController extends Controller
             $schedule = Schedule::with(['film', 'studio'])->find($request->schedule_id);
             $seats = Seat::whereIn('id', $request->seat_ids)->lockForUpdate()->get();
             
+            // Check if seats are available (only paid orders)
             $bookedSeats = OrderItem::whereHas('order', function($query) use ($request) {
                 $query->where('schedule_id', $request->schedule_id)
                       ->where('payment_status', 'paid');
             })->whereIn('seat_id', $request->seat_ids)->exists();
 
             if ($bookedSeats) {
+                DB::rollback();
                 return $this->errorResponse('Some seats are already booked', 400);
             }
 
