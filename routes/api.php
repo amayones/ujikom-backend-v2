@@ -72,7 +72,6 @@ Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(functi
 // Cashier Routes
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(function () {
     Route::post('/offline-order', [CashierOrderController::class, 'offlineOrder']);
-    Route::post('/print-ticket/{order_id}', [CashierOrderController::class, 'printTicket']);
     Route::post('/scan-ticket', [CashierOrderController::class, 'scanTicket']);
 });
 

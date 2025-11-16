@@ -106,22 +106,6 @@ class OrderController extends Controller
         }
     }
 
-    public function printTicket($orderId)
-    {
-        $order = Order::with(['orderItems.seat', 'schedule.film', 'schedule.studio', 'user'])
-                     ->find($orderId);
-
-        if (!$order) {
-            return $this->errorResponse('Order not found', 404);
-        }
-
-        if ($order->payment_status !== 'paid') {
-            return $this->errorResponse('Order not paid yet', 400);
-        }
-
-        return $this->successResponse($order, 'Ticket ready for print');
-    }
-
     public function scanTicket(Request $request)
     {
         $validator = Validator::make($request->all(), [
