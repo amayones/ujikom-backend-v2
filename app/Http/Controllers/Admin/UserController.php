@@ -115,7 +115,7 @@ class UserController extends Controller
         return $this->successResponse($user->fresh(), $message);
     }
 
-    public function resetPassword($id)
+    public function resetPassword(Request $request, $id)
     {
         $user = User::find($id);
         
@@ -123,11 +123,18 @@ class UserController extends Controller
             return $this->errorResponse('User not found', 404);
         }
 
-        $newPassword = 'password';
-        $user->update(['password' => Hash::make($newPassword)]);
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:8'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation failed', 422, $validator->errors());
+        }
+
+        $user->update(['password' => Hash::make($request->password)]);
 
         return $this->successResponse(
-            ['email' => $user->email, 'new_password' => $newPassword],
+            ['email' => $user->email],
             'Password reset successfully'
         );
     }
