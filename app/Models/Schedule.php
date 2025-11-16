@@ -14,6 +14,7 @@ class Schedule extends Model
         'studio_id',
         'show_time',
         'base_price',
+        'day_type',
     ];
 
     protected $casts = [

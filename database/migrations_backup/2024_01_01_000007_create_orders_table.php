@@ -15,18 +15,8 @@ return new class extends Migration
             $table->foreignId('schedule_id')->constrained()->onDelete('cascade');
             $table->decimal('total_amount', 10, 2);
             $table->enum('payment_status', ['pending', 'paid', 'failed', 'cancelled'])->default('pending');
-            $table->enum('ticket_status', ['unused', 'scanned'])->default('unused');
             $table->string('order_type')->default('online');
-            $table->string('customer_name')->nullable();
-            $table->string('customer_phone')->nullable();
-            $table->timestamp('scanned_at')->nullable();
-            $table->unsignedBigInteger('scanned_by')->nullable();
             $table->timestamps();
-            
-            $table->foreign('scanned_by')->references('id')->on('users')->onDelete('set null');
-            $table->index('payment_status');
-            $table->index('order_number');
-            $table->index('created_at');
         });
     }
 

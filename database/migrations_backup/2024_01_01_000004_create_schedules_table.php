@@ -13,12 +13,7 @@ return new class extends Migration
             $table->foreignId('film_id')->constrained()->onDelete('cascade');
             $table->foreignId('studio_id')->constrained()->onDelete('cascade');
             $table->datetime('show_time');
-            $table->decimal('base_price', 10, 2);
-            $table->enum('day_type', ['weekday', 'weekend'])->default('weekday');
             $table->timestamps();
-            
-            $table->index('show_time');
-            $table->index(['studio_id', 'show_time']);
         });
     }
 

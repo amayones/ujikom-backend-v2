@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('capacity');
+            $table->enum('type', ['regular', 'vip'])->default('regular');
             $table->timestamps();
         });
     }

@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('prices', function (Blueprint $table) {
             $table->id();
             $table->enum('day_type', ['weekday', 'weekend']);
-            $table->enum('seat_category', ['regular', 'vip']);
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });

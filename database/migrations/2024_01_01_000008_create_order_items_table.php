@@ -14,6 +14,8 @@ return new class extends Migration
             $table->foreignId('seat_id')->constrained()->onDelete('cascade');
             $table->decimal('price', 10, 2);
             $table->timestamps();
+            
+            $table->index('seat_id');
         });
     }
 

@@ -13,10 +13,9 @@ return new class extends Migration
             $table->foreignId('studio_id')->constrained()->onDelete('cascade');
             $table->string('row');
             $table->integer('column');
+            $table->enum('category', ['regular', 'vip'])->default('regular');
             $table->enum('status', ['available', 'maintenance'])->default('available');
             $table->timestamps();
-            
-            $table->index(['studio_id', 'row', 'column']);
         });
     }
 

@@ -39,10 +39,14 @@ class ScheduleSeeder extends Seeder
                         continue;
                     }
                     
+                    $dayType = in_array($date->dayOfWeek, [0, 6]) ? 'weekend' : 'weekday';
+                    
                     Schedule::create([
                         'film_id' => $film->id,
                         'studio_id' => $studio->id,
-                        'show_time' => $date->format('Y-m-d') . ' ' . $time . ':00'
+                        'show_time' => $date->format('Y-m-d') . ' ' . $time . ':00',
+                        'base_price' => $film->base_price,
+                        'day_type' => $dayType
                     ]);
                     
                     $usedSlots[$slotKey] = true;
