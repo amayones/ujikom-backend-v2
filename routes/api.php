@@ -102,6 +102,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/status/{orderNumber}', [PaymentController::class, 'checkStatus']);
 });
 
+// Cleanup old pending orders
+Route::get('/cleanup-pending-orders', function() {
+    try {
+        // Delete pending orders older than 1 hour
+        $deleted = \App\Models\Order::where('payment_status', 'pending')
+            ->where('created_at', '<', now()->subHour())
+            ->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Deleted {$deleted} old pending orders"
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
 // Fix production films - single endpoint
 Route::get('/fix-films-production', function() {
     try {
