@@ -74,7 +74,10 @@ class DiscountSeeder extends Seeder
         ];
 
         foreach ($discounts as $discount) {
-            Discount::create($discount);
+            Discount::updateOrCreate(
+                ['code' => $discount['code']],
+                $discount
+            );
         }
     }
 }
