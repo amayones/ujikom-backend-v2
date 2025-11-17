@@ -20,6 +20,7 @@ use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Cashier\OrderController as CashierOrderController;
 use App\Http\Controllers\Cashier\ScanController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\DiscountController;
 
 // Auth Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -53,7 +54,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::apiResource('schedules', AdminScheduleController::class);
     Route::apiResource('prices', AdminPriceController::class);
     Route::apiResource('seats', AdminSeatController::class);
+    Route::apiResource('discounts', DiscountController::class);
 });
+
+// Discount Verification (Public for customers)
+Route::post('/discounts/verify', [DiscountController::class, 'verify']);
 
 // Owner Routes
 Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(function () {
