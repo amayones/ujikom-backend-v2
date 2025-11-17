@@ -84,6 +84,18 @@ jobs:
             echo 'Users: ' . \App\Models\User::count();
             echo 'Films: ' . \App\Models\Film::count();
             echo 'Studios: ' . \App\Models\Studio::count();
+            echo 'Schedules: ' . \App\Models\Schedule::count();
+          "
+          
+          echo "Checking film posters..."
+          docker exec backend php artisan tinker --execute="
+            \$film = \App\Models\Film::first();
+            if (\$film && strpos(\$film->poster, 'placeholder') !== false) {
+              echo 'WARNING: Films using placeholder images!' . PHP_EOL;
+              echo 'Run: docker exec backend ./update-films-production.sh' . PHP_EOL;
+            } else {
+              echo 'Films posters OK' . PHP_EOL;
+            }
           "
           
           echo "Clearing caches..."
