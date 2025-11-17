@@ -30,3 +30,6 @@ jobs:
             --env-file .env \
             cinema-backend
           docker exec backend php artisan migrate:fresh --seed --force
+          docker exec backend php artisan config:clear
+          docker exec backend php artisan cache:clear
+          docker exec backend php artisan route:clear
