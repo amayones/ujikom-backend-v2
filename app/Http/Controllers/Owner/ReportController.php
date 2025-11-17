@@ -47,44 +47,69 @@ class ReportController extends Controller
         // Revenue chart data
         $revenueChart = [];
         if ($period === 'day') {
+            // Chart per jam (24 jam)
             for ($i = 0; $i < 24; $i++) {
                 $hour = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
                 $revenue = $orders->filter(fn($o) => $o->created_at->hour == $i)->sum('total_amount');
-                $revenueChart[] = ['label' => $hour, 'revenue' => $revenue];
+                $revenueChart[] = ['label' => $hour, 'value' => (float)$revenue];
             }
         } elseif ($period === 'month') {
+            // Chart per hari dalam bulan
             $days = $startDate->daysInMonth;
             for ($i = 1; $i <= $days; $i++) {
                 $revenue = $orders->filter(fn($o) => $o->created_at->day == $i)->sum('total_amount');
-                $revenueChart[] = ['label' => $i, 'revenue' => $revenue];
+                $revenueChart[] = ['label' => (string)$i, 'value' => (float)$revenue];
             }
-        } else {
+        } elseif ($period === 'year') {
+            // Chart per bulan dalam tahun
             for ($i = 1; $i <= 12; $i++) {
                 $monthName = Carbon::create()->month($i)->format('M');
                 $revenue = $orders->filter(fn($o) => $o->created_at->month == $i)->sum('total_amount');
-                $revenueChart[] = ['label' => $monthName, 'revenue' => $revenue];
+                $revenueChart[] = ['label' => $monthName, 'value' => (float)$revenue];
+            }
+        } else {
+            // Custom range - group by date
+            $dateRange = [];
+            $current = $startDate->copy();
+            while ($current->lte($endDate)) {
+                $dateStr = $current->format('d/m');
+                $revenue = $orders->filter(fn($o) => $o->created_at->format('Y-m-d') == $current->format('Y-m-d'))->sum('total_amount');
+                $revenueChart[] = ['label' => $dateStr, 'value' => (float)$revenue];
+                $current->addDay();
             }
         }
 
         // Transaction chart data
         $transactionChart = [];
         if ($period === 'day') {
+            // Chart per jam (24 jam)
             for ($i = 0; $i < 24; $i++) {
                 $hour = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
                 $count = $orders->filter(fn($o) => $o->created_at->hour == $i)->count();
-                $transactionChart[] = ['label' => $hour, 'count' => $count];
+                $transactionChart[] = ['label' => $hour, 'value' => $count];
             }
         } elseif ($period === 'month') {
+            // Chart per hari dalam bulan
             $days = $startDate->daysInMonth;
             for ($i = 1; $i <= $days; $i++) {
                 $count = $orders->filter(fn($o) => $o->created_at->day == $i)->count();
-                $transactionChart[] = ['label' => $i, 'count' => $count];
+                $transactionChart[] = ['label' => (string)$i, 'value' => $count];
             }
-        } else {
+        } elseif ($period === 'year') {
+            // Chart per bulan dalam tahun
             for ($i = 1; $i <= 12; $i++) {
                 $monthName = Carbon::create()->month($i)->format('M');
                 $count = $orders->filter(fn($o) => $o->created_at->month == $i)->count();
-                $transactionChart[] = ['label' => $monthName, 'count' => $count];
+                $transactionChart[] = ['label' => $monthName, 'value' => $count];
+            }
+        } else {
+            // Custom range - group by date
+            $current = $startDate->copy();
+            while ($current->lte($endDate)) {
+                $dateStr = $current->format('d/m');
+                $count = $orders->filter(fn($o) => $o->created_at->format('Y-m-d') == $current->format('Y-m-d'))->count();
+                $transactionChart[] = ['label' => $dateStr, 'value' => $count];
+                $current->addDay();
             }
         }
 
@@ -130,8 +155,9 @@ class ReportController extends Controller
             'order_types' => $orderTypes,
             'transactions' => $transactions,
             'period' => [
-                'start_date' => $startDate,
-                'end_date' => $endDate
+                'type' => $period,
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d')
             ],
             'summary' => [
                 'total_income' => $totalRevenue,
