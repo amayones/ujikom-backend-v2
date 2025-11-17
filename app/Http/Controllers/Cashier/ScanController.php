@@ -72,17 +72,6 @@ class ScanController extends Controller
                 );
             }
 
-            // Validasi waktu tayang (30 menit sebelum film)
-            $showTime = \Carbon\Carbon::parse($order->schedule->show_time);
-            $now = \Carbon\Carbon::now();
-            
-            if ($now->lt($showTime->copy()->subMinutes(30))) {
-                return $this->errorResponse(
-                    'Tiket hanya bisa di-scan 30 menit sebelum jadwal tayang (' . $showTime->format('d/m/Y H:i') . ')',
-                    400
-                );
-            }
-
             // Update ticket status
             $order->update([
                 'ticket_status' => 'scanned',
