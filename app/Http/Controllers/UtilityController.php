@@ -53,20 +53,17 @@ class UtilityController extends Controller
     public function fixFilmsProduction()
     {
         try {
-            // Delete old films
-            $oldFilms = ['Oppenheimer', 'The Batman', 'Spider-Man', 'Top Gun', 'Avengers'];
-            foreach ($oldFilms as $title) {
-                Film::where('title', 'LIKE', "%{$title}%")->delete();
-            }
+            // Delete all old films
+            Film::truncate();
             
-            // Ensure new films exist with correct data
+            // Create new films with IMDb posters
             $films = [
-                ['title' => 'Deadpool & Wolverine', 'poster' => 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', 'trailer' => 'https://www.youtube.com/watch?v=73_1biulkYk', 'genre' => 'Action, Comedy', 'duration' => 128, 'status' => 'play_now', 'description' => 'Deadpool teams up with Wolverine in an epic adventure across the multiverse.', 'base_price' => 55000],
-                ['title' => 'Inside Out 2', 'poster' => 'https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg', 'trailer' => 'https://www.youtube.com/watch?v=LEjhY15eCx0', 'genre' => 'Animation, Family', 'duration' => 96, 'status' => 'play_now', 'description' => 'Riley enters puberty and experiences a whole new set of emotions.', 'base_price' => 45000],
-                ['title' => 'Dune: Part Two', 'poster' => 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg', 'trailer' => 'https://www.youtube.com/watch?v=Way9Dexny3w', 'genre' => 'Sci-Fi, Adventure', 'duration' => 166, 'status' => 'play_now', 'description' => 'Paul Atreides unites with Chani and the Fremen to seek revenge.', 'base_price' => 52000],
-                ['title' => 'Wicked', 'poster' => 'https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg', 'trailer' => 'https://www.youtube.com/watch?v=6COmYeLsz4c', 'genre' => 'Fantasy, Musical', 'duration' => 160, 'status' => 'coming_soon', 'description' => 'The untold story of the Witches of Oz before Dorothy arrived.', 'base_price' => 50000],
-                ['title' => 'Moana 2', 'poster' => 'https://image.tmdb.org/t/p/w500/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg', 'trailer' => 'https://www.youtube.com/watch?v=hDZ7y8RP5HE', 'genre' => 'Animation, Adventure', 'duration' => 100, 'status' => 'coming_soon', 'description' => 'Moana embarks on a new oceanic adventure with her friends.', 'base_price' => 48000],
-                ['title' => 'Gladiator II', 'poster' => 'https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg', 'trailer' => 'https://www.youtube.com/watch?v=nkD35yv1RM0', 'genre' => 'Action, Drama', 'duration' => 148, 'status' => 'coming_soon', 'description' => 'The epic saga continues with a new gladiator rising to power.', 'base_price' => 55000]
+                ['title' => 'Avengers: Endgame', 'poster' => 'https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=TcMBFSGVi1c', 'genre' => 'Action, Adventure', 'duration' => 181, 'status' => 'play_now', 'description' => 'After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos actions and restore balance to the universe.', 'base_price' => 55000],
+                ['title' => 'Spider-Man: No Way Home', 'poster' => 'https://m.media-amazon.com/images/M/MV5BZWMyYzFjYTYtNTRjYi00OGExLWE2YzgtOGRmYjAxZTU3NzBiXkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=JfVOs4VSpmA', 'genre' => 'Action, Adventure', 'duration' => 148, 'status' => 'play_now', 'description' => 'Peter Parker seeks Doctor Stranges help to make the world forget he is Spider-Man, but the spell goes wrong.', 'base_price' => 50000],
+                ['title' => 'The Batman', 'poster' => 'https://m.media-amazon.com/images/M/MV5BMDdmMTBiNTYtMDIzNi00NGVlLWIzMDYtZTk3MTQ3NGQxZGEwXkEyXkFqcGdeQXVyMzMwOTU5MDk@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=mqqft2x_Aa4', 'genre' => 'Action, Crime', 'duration' => 176, 'status' => 'play_now', 'description' => 'Batman ventures into Gothams underworld when a sadistic killer leaves behind a trail of cryptic clues.', 'base_price' => 52000],
+                ['title' => 'Top Gun: Maverick', 'poster' => 'https://m.media-amazon.com/images/M/MV5BZWYzOGEwNTgtNWU3NS00ZTQ0LWJkODUtMmVhMjIwMjA1ZmQwXkEyXkFqcGdeQXVyMjkwOTAyMDU@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=giXco2jaZ_4', 'genre' => 'Action, Drama', 'duration' => 130, 'status' => 'coming_soon', 'description' => 'After thirty years, Maverick is still pushing the envelope as a top naval aviator.', 'base_price' => 48000],
+                ['title' => 'Oppenheimer', 'poster' => 'https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=uYPbbksJxIg', 'genre' => 'Biography, Drama', 'duration' => 180, 'status' => 'coming_soon', 'description' => 'The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.', 'base_price' => 55000],
+                ['title' => 'Barbie', 'poster' => 'https://m.media-amazon.com/images/M/MV5BNjU3N2QxNzYtMjk1NC00MTc4LTk1NTQtMmUxNTljM2I0NDA5XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_SX300.jpg', 'trailer' => 'https://www.youtube.com/watch?v=pBk4NYhWNMM', 'genre' => 'Adventure, Comedy', 'duration' => 114, 'status' => 'coming_soon', 'description' => 'Barbie and Ken are having the time of their lives in the colorful and seemingly perfect world of Barbie Land.', 'base_price' => 45000]
             ];
             
             foreach ($films as $filmData) {
