@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(fu
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
     Route::get('orders', [ScanController::class, 'getAllOrders']);
     Route::get('my-orders', [ScanController::class, 'getMyOrders']);
+    Route::get('all-purchases', [ScanController::class, 'getAllPurchases']);
     Route::post('/scan', [ScanController::class, 'scanAndUpdate']);
 });
 

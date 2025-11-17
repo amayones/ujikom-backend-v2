@@ -30,7 +30,8 @@ class ScanController extends Controller
         try {
             $cashierId = $request->user()->id;
             
-            $orders = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
+            // Hanya order offline yang dibuat cashier ini
+            $orders = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat', 'user'])
                 ->where('user_id', $cashierId)
                 ->where('order_type', 'offline')
                 ->orderBy('created_at', 'desc')
@@ -39,6 +40,20 @@ class ScanController extends Controller
             return $this->successResponse($orders, 'Cashier orders retrieved successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to fetch orders: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function getAllPurchases(Request $request)
+    {
+        try {
+            // Semua pembelian (online + offline)
+            $orders = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat', 'user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return $this->successResponse($orders, 'All purchases retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch purchases: ' . $e->getMessage(), 500);
         }
     }
 
