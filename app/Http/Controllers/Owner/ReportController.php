@@ -144,24 +144,44 @@ class ReportController extends Controller
             ];
         });
 
+        // Ticket chart data
+        $ticketChart = [];
+        if ($period === 'day') {
+            for ($i = 0; $i < 24; $i++) {
+                $hour = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
+                $tickets = $orders->filter(fn($o) => $o->created_at->hour == $i)->sum(fn($o) => $o->orderItems->count());
+                $ticketChart[] = ['label' => $hour, 'value' => $tickets];
+            }
+        } elseif ($period === 'month') {
+            $days = $startDate->daysInMonth;
+            for ($i = 1; $i <= $days; $i++) {
+                $tickets = $orders->filter(fn($o) => $o->created_at->day == $i)->sum(fn($o) => $o->orderItems->count());
+                $ticketChart[] = ['label' => (string)$i, 'value' => $tickets];
+            }
+        } elseif ($period === 'year') {
+            for ($i = 1; $i <= 12; $i++) {
+                $monthName = Carbon::create()->month($i)->format('M');
+                $tickets = $orders->filter(fn($o) => $o->created_at->month == $i)->sum(fn($o) => $o->orderItems->count());
+                $ticketChart[] = ['label' => $monthName, 'value' => $tickets];
+            }
+        } else {
+            $current = $startDate->copy();
+            while ($current->lte($endDate)) {
+                $dateStr = $current->format('d/m');
+                $tickets = $orders->filter(fn($o) => $o->created_at->format('Y-m-d') == $current->format('Y-m-d'))->sum(fn($o) => $o->orderItems->count());
+                $ticketChart[] = ['label' => $dateStr, 'value' => $tickets];
+                $current->addDay();
+            }
+        }
+
         $data = [
             'total_revenue' => $totalRevenue,
-            'total_transactions' => $totalTransactions,
             'total_tickets' => $totalTickets,
-            'avg_transaction' => $avgTransaction,
-            'revenue_chart' => $revenueChart,
-            'transaction_chart' => $transactionChart,
-            'top_films' => $topFilms,
-            'order_types' => $orderTypes,
-            'transactions' => $transactions,
+            'ticket_chart' => $ticketChart,
             'period' => [
                 'type' => $period,
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d')
-            ],
-            'summary' => [
-                'total_income' => $totalRevenue,
-                'total_transactions' => $totalTransactions
             ]
         ];
 
