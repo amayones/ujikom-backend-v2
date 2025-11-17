@@ -51,8 +51,15 @@ class ScanController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            \Log::info('getAllPurchases called', [
+                'total_orders' => $orders->count(),
+                'online_count' => $orders->where('order_type', 'online')->count(),
+                'offline_count' => $orders->where('order_type', 'offline')->count(),
+            ]);
+
             return $this->successResponse($orders, 'All purchases retrieved successfully');
         } catch (\Exception $e) {
+            \Log::error('getAllPurchases error', ['error' => $e->getMessage()]);
             return $this->errorResponse('Failed to fetch purchases: ' . $e->getMessage(), 500);
         }
     }
