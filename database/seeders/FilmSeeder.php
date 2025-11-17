@@ -73,7 +73,10 @@ class FilmSeeder extends Seeder
         ];
 
         foreach ($films as $film) {
-            Film::create($film);
+            Film::updateOrCreate(
+                ['title' => $film['title']],
+                $film
+            );
         }
     }
 }

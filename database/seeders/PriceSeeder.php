@@ -21,7 +21,10 @@ class PriceSeeder extends Seeder
         ];
 
         foreach ($prices as $price) {
-            Price::create($price);
+            Price::updateOrCreate(
+                ['day_type' => $price['day_type']],
+                $price
+            );
         }
     }
 }

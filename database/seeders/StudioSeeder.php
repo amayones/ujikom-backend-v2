@@ -25,7 +25,10 @@ class StudioSeeder extends Seeder
         ];
 
         foreach ($studios as $studio) {
-            Studio::create($studio);
+            Studio::updateOrCreate(
+                ['name' => $studio['name']],
+                $studio
+            );
         }
     }
 }
