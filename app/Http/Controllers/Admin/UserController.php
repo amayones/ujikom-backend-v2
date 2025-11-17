@@ -25,8 +25,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:customer,admin,owner,cashier',
-            'phone' => 'nullable|string|max:15'
+            'role' => 'required|in:customer,admin,owner,cashier'
         ]);
 
         if ($validator->fails()) {
@@ -37,8 +36,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'phone' => $request->phone
+            'role' => $request->role
         ]);
 
         return $this->successResponse($user, 'User created successfully', 201);
@@ -66,15 +64,14 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'role' => 'required|in:customer,admin,owner,cashier',
-            'phone' => 'nullable|string|max:15'
+            'role' => 'required|in:customer,admin,owner,cashier'
         ]);
 
         if ($validator->fails()) {
             return $this->errorResponse('Validation failed', 422, $validator->errors());
         }
 
-        $updateData = $request->only(['name', 'email', 'role', 'phone']);
+        $updateData = $request->only(['name', 'email', 'role']);
         
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);

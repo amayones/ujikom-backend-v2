@@ -19,7 +19,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:15',
             'role' => 'in:customer,admin,owner,cashier'
         ]);
 
@@ -31,7 +30,6 @@ class AuthController extends Controller
             'name' => strip_tags($request->name),
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'phone' => $request->phone ? strip_tags($request->phone) : null,
             'role' => $request->role ?? 'customer',
         ]);
 
@@ -83,7 +81,6 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:15',
         ]);
 
         if ($validator->fails()) {
@@ -93,7 +90,6 @@ class AuthController extends Controller
         $user = $request->user();
         $user->update([
             'name' => strip_tags($request->name),
-            'phone' => $request->phone ? strip_tags($request->phone) : null
         ]);
 
         return $this->successResponse($user, 'Profile updated successfully');
