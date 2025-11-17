@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     mysql-client \
     libpng-dev \
     zip \
-    unzip
+    unzip \
+    bash
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql gd
@@ -33,8 +34,12 @@ RUN chown -R www-data:www-data /var/www/html \
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy and set entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Expose port
 EXPOSE 80
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Use entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
