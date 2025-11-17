@@ -152,23 +152,47 @@ class ReportController extends Controller
             : Carbon::now()->endOfDay();
 
         // Get all orders with details
-        $orders = Order::with(['user', 'schedule.film', 'orderItems.seat'])
+        $orders = Order::with(['user', 'schedule.film', 'schedule.studio', 'orderItems.seat'])
                       ->where('payment_status', 'paid')
                       ->where('created_at', '>=', $startDate)
                       ->where('created_at', '<=', $endDate)
                       ->orderBy('created_at', 'desc')
                       ->get();
 
-        $income = $orders->sum('total_amount');
+        $totalRevenue = $orders->sum('total_amount');
+        $totalTransactions = $orders->count();
+        $totalTickets = $orders->sum(fn($o) => $o->orderItems->count());
+        $avgTransaction = $totalTransactions > 0 ? $totalRevenue / $totalTransactions : 0;
+
+        // Top films
+        $topFilms = $orders->groupBy('schedule.film.title')
+            ->map(fn($group) => [
+                'name' => $group->first()->schedule->film->title ?? 'N/A',
+                'revenue' => $group->sum('total_amount'),
+                'count' => $group->count()
+            ])
+            ->sortByDesc('revenue')
+            ->take(5)
+            ->values();
+
+        // Order types
+        $orderTypes = [
+            ['name' => 'Customer Online', 'count' => $orders->where('order_type', 'online')->count()],
+            ['name' => 'Kasir Tunai', 'count' => $orders->where('order_type', 'offline')->count()],
+        ];
 
         $transactions = $orders->map(function($order) {
             return [
                 'order_number' => $order->order_number,
                 'customer_name' => $order->user->name ?? $order->customer_name ?? 'N/A',
                 'film_title' => $order->schedule->film->title ?? 'N/A',
-                'total_amount' => $order->total_amount,
+                'studio' => $order->schedule->studio->name ?? 'N/A',
+                'show_time' => Carbon::parse($order->schedule->show_time)->format('d/m/Y H:i'),
+                'seats_count' => $order->orderItems->count(),
                 'seats' => $order->orderItems->map(fn($item) => $item->seat->row . $item->seat->column)->join(', '),
-                'created_at' => $order->created_at->format('d/m/Y'),
+                'order_type' => $order->order_type === 'online' ? 'Online' : 'Kasir',
+                'total_amount' => $order->total_amount,
+                'created_at' => $order->created_at->format('d/m/Y H:i'),
             ];
         });
 
@@ -178,9 +202,13 @@ class ReportController extends Controller
                 'end_date' => $endDate->format('d/m/Y')
             ],
             'summary' => [
-                'total_income' => $income,
-                'total_transactions' => $orders->count()
+                'total_income' => $totalRevenue,
+                'total_transactions' => $totalTransactions,
+                'total_tickets' => $totalTickets,
+                'avg_transaction' => $avgTransaction
             ],
+            'top_films' => $topFilms,
+            'order_types' => $orderTypes,
             'transactions' => $transactions,
             'generated_at' => Carbon::now()->format('d/m/Y H:i:s')
         ];
