@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             SeatSeeder::class,
             PriceSeeder::class,
             ScheduleSeeder::class,
+            DiscountSeeder::class,
         ]);
         
         // OrderSeeder is optional (sample data)
