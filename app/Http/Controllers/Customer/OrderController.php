@@ -113,6 +113,12 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        // Auto-cancel expired orders
+        Order::where('user_id', $request->user()->id)
+            ->where('payment_status', 'pending')
+            ->where('created_at', '<', Carbon::now()->subMinutes(5))
+            ->update(['payment_status' => 'cancelled']);
+
         $perPage = $request->get('per_page', 15);
         $orders = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
                       ->where('user_id', $request->user()->id)
