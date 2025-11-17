@@ -64,7 +64,7 @@ Route::middleware(['auth:sanctum', 'role:owner'])->prefix('owner')->group(functi
 // Cashier Routes
 Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('cashier')->group(function () {
     Route::post('offline-order', [CashierOrderController::class, 'offlineOrder']);
-    Route::get('orders', [ScanController::class, 'getAllOrders']);
+    Route::get('orders', [ScanController::class, 'getAllPurchases']); // Alias untuk backward compatibility
     Route::get('my-orders', [ScanController::class, 'getMyOrders']);
     Route::get('all-purchases', [ScanController::class, 'getAllPurchases']);
     Route::post('/scan', [ScanController::class, 'scanAndUpdate']);
