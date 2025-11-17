@@ -177,11 +177,24 @@ class ReportController extends Controller
         $data = [
             'total_revenue' => $totalRevenue,
             'total_tickets' => $totalTickets,
+            'total_transactions' => $totalTransactions,
+            'avg_transaction' => $avgTransaction,
             'ticket_chart' => $ticketChart,
+            'revenue_chart' => $revenueChart,
+            'transaction_chart' => $transactionChart,
+            'top_films' => $topFilms,
+            'order_types' => $orderTypes,
+            'transactions' => $transactions,
             'period' => [
                 'type' => $period,
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d')
+            ],
+            'summary' => [
+                'total_income' => $totalRevenue,
+                'total_transactions' => $totalTransactions,
+                'total_tickets' => $totalTickets,
+                'avg_transaction' => $avgTransaction
             ]
         ];
 
