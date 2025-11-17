@@ -15,29 +15,25 @@ class UserSeeder extends Seeder
                 'name' => 'Customer Test',
                 'email' => 'customer@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'customer',
-                'phone' => '081234567890'
+                'role' => 'customer'
             ],
             [
                 'name' => 'Admin Test',
                 'email' => 'admin@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'admin',
-                'phone' => '081234567891'
+                'role' => 'admin'
             ],
             [
                 'name' => 'Owner Test',
                 'email' => 'owner@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'owner',
-                'phone' => '081234567892'
+                'role' => 'owner'
             ],
             [
                 'name' => 'Cashier Test',
                 'email' => 'cashier@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'cashier',
-                'phone' => '081234567893'
+                'role' => 'cashier'
             ]
         ];
 
