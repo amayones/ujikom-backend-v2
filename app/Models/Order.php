@@ -15,6 +15,8 @@ class Order extends Model
         'user_id',
         'schedule_id',
         'total_amount',
+        'discount_id',
+        'discount_amount',
         'payment_status',
         'order_type',
         'customer_name',
@@ -44,6 +46,11 @@ class Order extends Model
     public function scannedBy()
     {
         return $this->belongsTo(User::class, 'scanned_by');
+    }
+
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
     }
 
     public function getIsExpiredAttribute()

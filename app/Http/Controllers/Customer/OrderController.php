@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Price;
 use App\Models\Seat;
 use App\Models\Schedule;
+use App\Models\Discount;
 use App\Helpers\OrderHelper;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
@@ -24,7 +25,8 @@ class OrderController extends Controller
         $validator = Validator::make($request->all(), [
             'schedule_id' => 'required|exists:schedules,id',
             'seat_ids' => 'required|array',
-            'seat_ids.*' => 'exists:seats,id'
+            'seat_ids.*' => 'exists:seats,id',
+            'discount_code' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
@@ -74,12 +76,33 @@ class OrderController extends Controller
                 ];
             }
 
+            // Apply discount if provided
+            $discountAmount = 0;
+            $discountId = null;
+            
+            if ($request->discount_code) {
+                $discount = Discount::where('code', $request->discount_code)
+                    ->where('is_active', true)
+                    ->first();
+                
+                if ($discount && $discount->isValid()) {
+                    $discountAmount = $discount->calculateDiscount($totalAmount);
+                    $discountId = $discount->id;
+                    $totalAmount -= $discountAmount;
+                    
+                    // Increment usage count
+                    $discount->increment('used_count');
+                }
+            }
+
             // Create order with unique order number
             $order = Order::create([
                 'order_number' => OrderHelper::generateOrderNumber('ORD'),
                 'user_id' => $request->user()->id,
                 'schedule_id' => $request->schedule_id,
                 'total_amount' => $totalAmount,
+                'discount_id' => $discountId,
+                'discount_amount' => $discountAmount,
                 'payment_status' => 'pending',
                 'order_type' => 'online'
             ]);
