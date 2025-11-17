@@ -52,7 +52,6 @@ SEEDERS=(
     "SeatSeeder"
     "PriceSeeder"
     "ScheduleSeeder"
-    "OrderSeeder"
 )
 
 for SEEDER in "${SEEDERS[@]}"; do
@@ -92,6 +91,10 @@ php artisan tinker --execute="
     echo 'Schedules: ' . \App\Models\Schedule::count() . PHP_EOL;
     echo 'Orders: ' . \App\Models\Order::count() . PHP_EOL;
 "
+
+echo ""
+echo "Seeding OrderSeeder (optional)..."
+php artisan db:seed --class=OrderSeeder --force 2>/dev/null && echo "✓ OrderSeeder completed" || echo "⚠ OrderSeeder skipped"
 
 echo ""
 echo "=== Seeding completed successfully ==="

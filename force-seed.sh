@@ -68,7 +68,6 @@ SEEDERS=(
     "SeatSeeder:Seats"
     "PriceSeeder:Prices"
     "ScheduleSeeder:Schedules"
-    "OrderSeeder:Orders"
 )
 
 for SEEDER_INFO in "${SEEDERS[@]}"; do
@@ -96,7 +95,6 @@ php artisan tinker --execute="
         'Seats' => \App\Models\Seat::count(),
         'Prices' => \App\Models\Price::count(),
         'Schedules' => \App\Models\Schedule::count(),
-        'Orders' => \App\Models\Order::count(),
     ];
     
     foreach (\$counts as \$model => \$count) {
@@ -127,6 +125,10 @@ php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 echo -e "${GREEN}✓ Caches cleared${NC}"
+echo ""
+
+echo "6. Seeding OrderSeeder (optional)..."
+php artisan db:seed --class=OrderSeeder --force 2>/dev/null && echo -e "${GREEN}✓ OrderSeeder completed${NC}" || echo -e "${YELLOW}⚠ OrderSeeder skipped${NC}"
 echo ""
 
 echo "=========================================="

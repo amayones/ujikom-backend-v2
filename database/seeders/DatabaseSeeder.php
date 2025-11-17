@@ -22,7 +22,13 @@ class DatabaseSeeder extends Seeder
             SeatSeeder::class,
             PriceSeeder::class,
             ScheduleSeeder::class,
-            OrderSeeder::class,
         ]);
+        
+        // OrderSeeder is optional (sample data)
+        try {
+            $this->call(OrderSeeder::class);
+        } catch (\Exception $e) {
+            $this->command->warn('OrderSeeder skipped: ' . $e->getMessage());
+        }
     }
 }

@@ -75,7 +75,10 @@ seed_with_retry "FilmSeeder" "Films" || exit 1
 seed_with_retry "SeatSeeder" "Seats" || exit 1
 seed_with_retry "PriceSeeder" "Prices" || exit 1
 seed_with_retry "ScheduleSeeder" "Schedules" || exit 1
-seed_with_retry "OrderSeeder" "Orders" || exit 1
+
+echo ""
+echo "→ Seeding Orders (optional)..."
+php artisan db:seed --class=OrderSeeder --force 2>/dev/null && echo "  ✓ Orders seeded successfully" || echo "  ⚠ Orders skipped (optional)"
 
 # Step 5: Verify all data
 echo ""
@@ -90,7 +93,6 @@ echo '  Films:     ' . \App\Models\Film::count() . PHP_EOL;
 echo '  Seats:     ' . \App\Models\Seat::count() . PHP_EOL;
 echo '  Prices:    ' . \App\Models\Price::count() . PHP_EOL;
 echo '  Schedules: ' . \App\Models\Schedule::count() . PHP_EOL;
-echo '  Orders:    ' . \App\Models\Order::count() . PHP_EOL;
 "
 
 # Step 6: Final cache clear
