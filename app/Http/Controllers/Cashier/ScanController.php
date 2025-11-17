@@ -25,6 +25,23 @@ class ScanController extends Controller
         }
     }
 
+    public function getMyOrders(Request $request)
+    {
+        try {
+            $cashierId = $request->user()->id;
+            
+            $orders = Order::with(['schedule.film', 'schedule.studio', 'orderItems.seat'])
+                ->where('user_id', $cashierId)
+                ->where('order_type', 'offline')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return $this->successResponse($orders, 'Cashier orders retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch orders: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function scanAndUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,6 +72,17 @@ class ScanController extends Controller
                 );
             }
 
+            // Validasi waktu tayang (30 menit sebelum film)
+            $showTime = \Carbon\Carbon::parse($order->schedule->show_time);
+            $now = \Carbon\Carbon::now();
+            
+            if ($now->lt($showTime->copy()->subMinutes(30))) {
+                return $this->errorResponse(
+                    'Tiket hanya bisa di-scan 30 menit sebelum jadwal tayang (' . $showTime->format('d/m/Y H:i') . ')',
+                    400
+                );
+            }
+
             // Update ticket status
             $order->update([
                 'ticket_status' => 'scanned',
@@ -62,7 +90,7 @@ class ScanController extends Controller
                 'scanned_by' => $request->user()->id
             ]);
 
-            return $this->successResponse($order, 'Tiket berhasil di-scan');
+            return $this->successResponse($order, 'Tiket berhasil di-scan. Pelanggan dapat masuk.');
         } catch (\Exception $e) {
             return $this->errorResponse('Gagal scan tiket: ' . $e->getMessage(), 500);
         }
