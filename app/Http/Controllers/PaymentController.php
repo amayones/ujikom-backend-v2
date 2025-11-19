@@ -26,7 +26,7 @@ class PaymentController extends Controller
         $this->initMidtrans();
         
         try {
-            $order = Order::with(['orderItems.seat', 'schedule.film', 'user'])->findOrFail($orderId);
+            $order = Order::with(['orderItems.seat', 'schedule.film', 'user', 'discount'])->findOrFail($orderId);
 
             $itemDetails = [];
             foreach ($order->orderItems as $item) {
@@ -35,6 +35,16 @@ class PaymentController extends Controller
                     'price' => (int) $item->price,
                     'quantity' => 1,
                     'name' => "Seat {$item->seat->row}{$item->seat->column}",
+                ];
+            }
+            
+            // Add discount as negative item if exists
+            if ($order->discount_id && $order->discount_amount > 0) {
+                $itemDetails[] = [
+                    'id' => 'DISCOUNT-' . $order->discount_id,
+                    'price' => -(int) $order->discount_amount,
+                    'quantity' => 1,
+                    'name' => "Discount: {$order->discount->code}",
                 ];
             }
 
